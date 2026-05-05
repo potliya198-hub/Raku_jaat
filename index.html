@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 Raku Jaat</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #f9f0ff, #fff0f6, #fffbe6, #f0fff4);
+    font-family: 'Segoe UI', sans-serif;
+    color: #222;
+    padding-bottom: 60px;
+  }
+  header {
+    background: linear-gradient(90deg, #a855f7, #ec4899, #f97316);
+    padding: 22px 20px 16px;
+    position: sticky; top: 0; z-index: 10;
+    box-shadow: 0 4px 20px rgba(168,85,247,0.3);
+  }
+  header h1 { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: 1px; }
+  header p { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 3px; }
+
+  .container { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .card {
+    border-radius: 20px; padding: 18px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+    position: relative; overflow: hidden;
+  }
+  .card::after {
+    content: ""; position: absolute; right: -16px; top: -16px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .card-purple { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+  .card-pink { background: linear-gradient(135deg, #ec4899, #db2777); }
+  .card p:first-child { font-size: 11px; color: rgba(255,255,255,0.85); margin-bottom: 6px; }
+  .card p:last-child { font-size: 24px; font-weight: 900; color: #fff; }
+
+  .pay-breakdown {
+    background: #fff; border-radius: 18px;
+    padding: 16px; margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    display: flex; gap: 12px; justify-content: space-around;
+  }
+  .pay-item { text-align: center; }
+  .pay-item .emoji { font-size: 22px; }
+  .pay-item .label { font-size: 10px; color: #999; margin: 3px 0; font-weight: 600; }
+  .pay-item .val { font-size: 15px; font-weight: 800; }
+
+  .form-box {
+    background: #fff; border-radius: 24px;
+    padding: 20px; margin-bottom: 24px;
+    box-shadow: 0 6px 24px rgba(168,85,247,0.12);
+    border: 2px solid rgba(168,85,247,0.1);
+  }
+  .form-box h3 { font-size: 16px; font-weight: 800; color: #7c3aed; margin-bottom: 16px; }
+  .section-label {
+    font-size: 11px; color: #999; letter-spacing: 0.5px;
+    text-transform: uppercase; margin-bottom: 8px; font-weight: 700;
+  }
+
+  .cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .cat-btn {
+    padding: 7px 13px; border-radius: 20px; border: 2px solid transparent;
+    background: #f3f4f6; color: #666;
+    cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;
+  }
+  .pay-modes { display: flex; gap: 10px; margin-bottom: 16px; }
+  .pay-btn {
+    flex: 1; padding: 12px 8px; border-radius: 16px;
+    border: 2px solid #e5e7eb;
+    background: #f9fafb; color: #888;
+    cursor: pointer; font-weight: 700; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .pay-btn .pm-emoji { font-size: 22px; }
+  .pay-btn .pm-name { font-size: 12px; }
+
+  input[type=text], input[type=number], input[type=date] {
+    width: 100%; padding: 13px 16px; border-radius: 14px;
+    border: 2px solid #e5e7eb;
+    background: #f9fafb; color: #222;
+    font-size: 14px; outline: none; transition: border 0.2s;
+  }
+  input:focus { border-color: #a855f7; background: #fdf4ff; }
+  input::placeholder { color: #bbb; }
+  .row2 { display: flex; gap: 10px; margin: 10px 0 14px; }
+  .row2 input { flex: 1; }
+
+  #addBtn {
+    width: 100%; padding: 15px; border-radius: 16px; border: none;
+    background: linear-gradient(90deg, #a855f7, #ec4899);
+    color: #fff; font-size: 15px; font-weight: 900;
+    cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px;
+    box-shadow: 0 4px 16px rgba(168,85,247,0.4);
+  }
+  #addBtn.saved { background: linear-gradient(90deg, #22c55e, #16a34a); box-shadow: 0 4px 16px rgba(34,197,94,0.4); }
+
+  .view-toggle {
+    display: flex; background: #fff;
+    border-radius: 16px; padding: 4px; margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+  .view-btn {
+    flex: 1; padding: 10px; border-radius: 12px; border: none;
+    background: transparent; color: #999;
+    font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .view-btn.active {
+    background: linear-gradient(90deg, #a855f7, #ec4899);
+    color: #fff; box-shadow: 0 2px 10px rgba(168,85,247,0.3);
+  }
+
+  #dateFilter { margin-bottom: 16px; }
+
+  .date-group { margin-bottom: 20px; }
+  .date-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .date-label { font-size: 13px; color: #888; font-weight: 700; }
+  .date-total {
+    background: linear-gradient(90deg, #a855f7, #ec4899);
+    color: #fff; padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 800;
+  }
+
+  .entry {
+    background: #fff; border-radius: 16px;
+    padding: 14px 16px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border-left: 4px solid transparent;
+  }
+  .entry-icon {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .entry-info { flex: 1; min-width: 0; }
+  .entry-desc { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; color: #222; }
+  .entry-meta { display: flex; gap: 6px; align-items: center; }
+  .entry-cat { font-size: 11px; color: #999; font-weight: 600; }
+  .entry-pay { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 10px; }
+  .entry-right { text-align: right; flex-shrink: 0; }
+  .entry-amount { font-weight: 900; font-size: 17px; margin-bottom: 4px; }
+  .del-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: #ddd; }
+  .del-btn:hover { color: #f87171; }
+
+  .empty { text-align: center; padding: 50px 20px; color: #bbb; }
+  .empty .big { font-size: 56px; margin-bottom: 12px; }
+  .empty p { font-size: 15px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💰 Raku Jaat</h1>
+  <p>Apna har kharcha yahin likhein — simple aur fast!</p>
+</header>
+
+<div class="container">
+
+  <div class="cards">
+    <div class="card card-purple">
+      <p>🗓️ Aaj ka Kharcha</p>
+      <p id="todayTotal">₹0</p>
+    </div>
+    <div class="card card-pink">
+      <p>📊 Kul Kharcha</p>
+      <p id="allTotal">₹0</p>
+    </div>
+  </div>
+
+  <div class="pay-breakdown" id="payBreakdown" style="display:none">
+    <div class="pay-item">
+      <div class="emoji">📲</div>
+      <div class="label">UPI</div>
+      <div class="val" id="upiTotal" style="color:#7c3aed">₹0</div>
+    </div>
+    <div class="pay-item">
+      <div class="emoji">💵</div>
+      <div class="label">Cash</div>
+      <div class="val" id="cashTotal" style="color:#16a34a">₹0</div>
+    </div>
+    <div class="pay-item">
+      <div class="emoji">💳</div>
+      <div class="label">Card</div>
+      <div class="val" id="cardTotal" style="color:#0ea5e9">₹0</div>
+    </div>
+  </div>
+
+  <div class="form-box">
+    <h3>✏️ Naya Kharcha Likhein</h3>
+
+    <p class="section-label">Category</p>
+    <div class="cats" id="catBtns"></div>
+
+    <p class="section-label">Payment Mode</p>
+    <div class="pay-modes" id="payBtns"></div>
+
+    <input type="text" id="descInput" placeholder="Kya kharcha hua? (eg. Sabzi, Bus ticket...)">
+    <div class="row2">
+      <input type="number" id="amountInput" placeholder="₹ Kitna?" min="0">
+      <input type="date" id="dateInput">
+    </div>
+    <button id="addBtn" onclick="addEntry()">💾 Likhein</button>
+  </div>
+
+  <div class="view-toggle">
+    <button class="view-btn active" id="btnAaj" onclick="setView('aaj')">📅 Aaj</button>
+    <button class="view-btn" id="btnSab" onclick="setView('sab')">📋 Sab Din</button>
+  </div>
+  <div id="dateFilter">
+    <input type="date" id="filterDate" oninput="render()">
+  </div>
+
+  <div id="entriesList"></div>
+</div>
+
+<script>
+const CATEGORIES = [
+  { name: "Khana", emoji: "🍛", color: "#f97316" },
+  { name: "Transport", emoji: "🚗", color: "#06b6d4" },
+  { name: "Shopping", emoji: "🛍️", color: "#ec4899" },
+  { name: "Bill", emoji: "💡", color: "#22c55e" },
+  { name: "Entertainment", emoji: "🎬", color: "#a855f7" },
+  { name: "Other", emoji: "📦", color: "#f59e0b" },
+];
+const PAYMENT_MODES = [
+  { name: "UPI", emoji: "📲", color: "#7c3aed" },
+  { name: "Cash", emoji: "💵", color: "#16a34a" },
+  { name: "Card", emoji: "💳", color: "#0ea5e9" },
+];
+
+let entries = JSON.parse(localStorage.getItem("rakujaat-data") || "[]");
+let selCat = CATEGORIES[0].name;
+let selPay = PAYMENT_MODES[0].name;
+let view = "aaj";
+
+function getTodayStr() { return new Date().toISOString().split("T")[0]; }
+function formatDate(d) {
+  return new Date(d).toLocaleDateString("hi-IN", { day: "2-digit", month: "long", year: "numeric" });
+}
+function save() { localStorage.setItem("rakujaat-data", JSON.stringify(entries)); }
+function getCat(n) { return CATEGORIES.find(c => c.name === n) || CATEGORIES[5]; }
+function getPay(n) { return PAYMENT_MODES.find(p => p.name === n) || PAYMENT_MODES[1]; }
+
+function buildCatBtns() {
+  const c = document.getElementById("catBtns"); c.innerHTML = "";
+  CATEGORIES.forEach(cat => {
+    const b = document.createElement("button");
+    b.className = "cat-btn";
+    b.textContent = cat.emoji + " " + cat.name;
+    if (selCat === cat.name) {
+      b.style.borderColor = cat.color;
+      b.style.background = cat.color + "22";
+      b.style.color = cat.color;
+    }
+    b.onclick = () => { selCat = cat.name; buildCatBtns(); };
+    c.appendChild(b);
+  });
+}
+function buildPayBtns() {
+  const c = document.getElementById("payBtns"); c.innerHTML = "";
+  PAYMENT_MODES.forEach(pm => {
+    const b = document.createElement("button");
+    b.className = "pay-btn";
+    b.innerHTML = `<span class="pm-emoji">${pm.emoji}</span><span class="pm-name">${pm.name}</span>`;
+    if (selPay === pm.name) {
+      b.style.borderColor = pm.color;
+      b.style.background = pm.color + "18";
+      b.style.color = pm.color;
+    }
+    b.onclick = () => { selPay = pm.name; buildPayBtns(); };
+    c.appendChild(b);
+  });
+}
+
+function addEntry() {
+  const desc = document.getElementById("descInput").value.trim();
+  const amount = parseFloat(document.getElementById("amountInput").value);
+  const date = document.getElementById("dateInput").value || getTodayStr();
+  if (!desc || !amount || amount <= 0) return;
+  entries.unshift({ id: Date.now(), desc, amount, category: selCat, paymentMode: selPay, date });
+  save(); render();
+  document.getElementById("descInput").value = "";
+  document.getElementById("amountInput").value = "";
+  const btn = document.getElementById("addBtn");
+  btn.textContent = "✅ Likh Diya!";
+  btn.classList.add("saved");
+  setTimeout(() => { btn.textContent = "💾 Likhein"; btn.classList.remove("saved"); }, 1500);
+}
+function deleteEntry(id) { entries = entries.filter(e => e.id !== id); save(); render(); }
+
+function setView(v) {
+  view = v;
+  document.getElementById("btnAaj").className = "view-btn" + (v === "aaj" ? " active" : "");
+  document.getElementById("btnSab").className = "view-btn" + (v === "sab" ? " active" : "");
+  document.getElementById("dateFilter").style.display = v === "aaj" ? "block" : "none";
+  render();
+}
+
+function render() {
+  const filterDate = document.getElementById("filterDate").value || getTodayStr();
+  const todayStr = getTodayStr();
+  const todayE = entries.filter(e => e.date === todayStr);
+  document.getElementById("todayTotal").textContent = "₹" + todayE.reduce((s,e)=>s+e.amount,0).toLocaleString();
+  document.getElementById("allTotal").textContent = "₹" + entries.reduce((s,e)=>s+e.amount,0).toLocaleString();
+  const upi = todayE.filter(e=>e.paymentMode==="UPI").reduce((s,e)=>s+e.amount,0);
+  const cash = todayE.filter(e=>e.paymentMode==="Cash").reduce((s,e)=>s+e.amount,0);
+  const card = todayE.filter(e=>e.paymentMode==="Card").reduce((s,e)=>s+e.amount,0);
+  document.getElementById("upiTotal").textContent = "₹" + upi.toLocaleString();
+  document.getElementById("cashTotal").textContent = "₹" + cash.toLocaleString();
+  document.getElementById("cardTotal").textContent = "₹" + card.toLocaleString();
+  document.getElementById("payBreakdown").style.display = todayE.length > 0 ? "flex" : "none";
+
+  const filtered = view === "aaj" ? entries.filter(e => e.date === filterDate) : entries;
+  const list = document.getElementById("entriesList");
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="big">📝</div><p>Koi kharcha nahi likha abhi</p></div>`;
+    return;
+  }
+  const grouped = {};
+  filtered.forEach(e => { if (!grouped[e.date]) grouped[e.date] = []; grouped[e.date].push(e); });
+  const sortedDates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+
+  list.innerHTML = sortedDates.map(date => {
+    const dayTotal = grouped[date].reduce((s,e)=>s+e.amount,0);
+    const rows = grouped[date].map(entry => {
+      const cat = getCat(entry.category);
+      const pay = getPay(entry.paymentMode);
+      return `
+        <div class="entry" style="border-left-color:${cat.color}">
+          <div class="entry-icon" style="background:${cat.color}18">${cat.emoji}</div>
+          <div class="entry-info">
+            <div class="entry-desc">${entry.desc}</div>
+            <div class="entry-meta">
+              <span class="entry-cat">${entry.category}</span>
+              <span style="font-size:10px;color:#ddd">•</span>
+              <span class="entry-pay" style="color:${pay.color};background:${pay.color}18">${pay.emoji} ${pay.name}</span>
+            </div>
+          </div>
+          <div class="entry-right">
+            <div class="entry-amount" style="color:${cat.color}">₹${entry.amount.toLocaleString()}</div>
+            <button class="del-btn" onclick="deleteEntry(${entry.id})">🗑️</button>
+          </div>
+        </div>`;
+    }).join("");
+    return `<div class="date-group">
+      <div class="date-header">
+        <span class="date-label">🗓️ ${formatDate(date)}</span>
+        <span class="date-total">₹${dayTotal.toLocaleString()}</span>
+      </div>${rows}</div>`;
+  }).join("");
+}
+
+document.getElementById("dateInput").value = getTodayStr();
+document.getElementById("filterDate").value = getTodayStr();
+buildCatBtns(); buildPayBtns(); render();
+</script>
+</body>
+</html>
