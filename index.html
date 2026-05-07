@@ -167,11 +167,11 @@
 
   <div class="cards">
     <div class="card card-purple">
-      <p>🗓️ Aaj ka Kharcha</p>
+      <p>🗓️ Today's expenses </p>
       <p id="todayTotal">₹0</p>
     </div>
     <div class="card card-pink">
-      <p>📊 Kul Kharcha</p>
+      <p>📊 Total expenses </p>
       <p id="allTotal">₹0</p>
     </div>
   </div>
@@ -195,7 +195,7 @@
   </div>
 
   <div class="form-box">
-    <h3>✏️ Naya Kharcha Likhein</h3>
+    <h3>✏️ Add a new expense </h3>
 
     <p class="section-label">Category</p>
     <div class="cats" id="catBtns"></div>
@@ -212,8 +212,8 @@
   </div>
 
   <div class="view-toggle">
-    <button class="view-btn active" id="btnAaj" onclick="setView('aaj')">📅 Aaj</button>
-    <button class="view-btn" id="btnSab" onclick="setView('sab')">📋 Sab Din</button>
+    <button class="view-btn active" id="btnAaj" onclick="setView('aaj')">📅 Today</button>
+    <button class="view-btn" id="btnSab" onclick="setView('sab')">📋 All days</button>
   </div>
   <div id="dateFilter">
     <input type="date" id="filterDate" oninput="render()">
@@ -224,8 +224,8 @@
 
 <script>
 const CATEGORIES = [
-  { name: "Khana", emoji: "🍛", color: "#f97316" },
-  { name: "Transport", emoji: "🚗", color: "#06b6d4" },
+  { name: "Food", emoji: "🍛", color: "#f97316" },
+  { name: "Travel", emoji: "🧳", color: "#06b6d4" },
   { name: "Shopping", emoji: "🛍️", color: "#ec4899" },
   { name: "Bill", emoji: "💡", color: "#22c55e" },
   { name: "Entertainment", emoji: "🎬", color: "#a855f7" },
@@ -240,7 +240,7 @@ const PAYMENT_MODES = [
 let entries = JSON.parse(localStorage.getItem("rakujaat-data") || "[]");
 let selCat = CATEGORIES[0].name;
 let selPay = PAYMENT_MODES[0].name;
-let view = "aaj";
+let view = "Today";
 
 function getTodayStr() { return new Date().toISOString().split("T")[0]; }
 function formatDate(d) {
@@ -291,7 +291,7 @@ function addEntry() {
   document.getElementById("descInput").value = "";
   document.getElementById("amountInput").value = "";
   const btn = document.getElementById("addBtn");
-  btn.textContent = "✅ Likh Diya!";
+  btn.textContent = "✅ Written down !";
   btn.classList.add("saved");
   setTimeout(() => { btn.textContent = "💾 Likhein"; btn.classList.remove("saved"); }, 1500);
 }
@@ -299,12 +299,10 @@ function deleteEntry(id) { entries = entries.filter(e => e.id !== id); save(); r
 
 function setView(v) {
   view = v;
-  document.getElementById("btnAaj").className = "view-btn" + (v === "aaj" ? " active" : "");
-  document.getElementById("btnSab").className = "view-btn" + (v === "sab" ? " active" : "");
-  document.getElementById("dateFilter").style.display = v === "aaj" ? "block" : "none";
-  render();
-}
-
+  document.getElementById("btntoday").className = "view-btn" + (v === "Today" ? " active" : "");
+  document.getElementById("btnall").vssName = "view-btn" + (v === "All" ? " active" : "");
+  document.getElementById("dateFilter").style.display = v === "Today" ? "block" : "none";
+  renderbtntoday
 function render() {
   const filterDate = document.getElementById("filterDate").value || getTodayStr();
   const todayStr = getTodayStr();
